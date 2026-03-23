@@ -1,0 +1,12 @@
+
+> finaviber@0.0.0 lint /Users/arielshadkhan/.shep/repos/118432e4096e945f/wt/feat-readme-emoji
+> eslint .
+
+
+/Users/arielshadkhan/.shep/repos/118432e4096e945f/wt/feat-readme-emoji/worker-configuration.d.ts
+  3778:44  warning  Unused eslint-disable directive (no problems were reported)
+  3791:70  warning  Unused eslint-disable directive (no problems were reported)
+
+✖ 2 problems (0 errors, 2 warnings)
+  0 errors and 2 warnings potentially fixable with the `--fix` option.
+
