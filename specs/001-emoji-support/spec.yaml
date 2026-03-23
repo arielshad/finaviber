@@ -4,14 +4,14 @@
 name: "emoji-support"
 number: "001"
 branch: "feat/001-emoji-support"
-oneLiner: "Add emoji picker and rendering support to the chat/messaging UI"
+oneLiner: "Add emoji picker and rendering support to the React frontend"
 summary: >
-  Add emoji support to the finaviber application. Since the current app is a minimal
-  Vite + React + Hono + Cloudflare Workers template with only a counter and API demo,
-  this feature will introduce an emoji picker component in the React frontend that allows
-  users to select and insert emojis. This may also involve backend considerations if emoji
-  data needs to be stored or processed through the Hono API layer.
-phase: "Analysis"
+  Add emoji support to the finaviber application by introducing an emoji picker
+  component, a text input area where emojis can be inserted, and a display area
+  showing the composed text with emojis rendered inline. The feature is frontend-only,
+  built as a new demo section in the existing App component, using a third-party
+  emoji picker library for comprehensive emoji data and category browsing.
+phase: "Requirements"
 sizeEstimate: "S"
 
 relatedFeatures: []
@@ -23,6 +23,7 @@ technologies:
   - "Hono"
   - "Cloudflare Workers"
   - "CSS"
+  - "emoji-mart"
 
 relatedLinks:
   - title: "emoji-mart - Emoji picker component for React"
@@ -33,22 +34,129 @@ relatedLinks:
     url: "https://hono.dev"
 
 openQuestions:
-  - "What is the intended use context for emojis — is this for a future chat/messaging feature, or should emojis be added to the existing demo UI (e.g., emoji reactions on the counter)?"
-  - "Should emoji selection persist (e.g., stored via the Hono API) or be purely client-side?"
-  - "Should a third-party emoji picker library (e.g., emoji-mart) be used, or should a custom minimal picker be built?"
-  - "What emoji set should be supported — native OS emojis, or a cross-platform sprite set (e.g., Twitter/Google)?"
+  - question: "Should we use an existing emoji picker library or build a custom one from scratch?"
+    resolved: true
+    options:
+      - option: "Use emoji-mart library"
+        description: "emoji-mart is a mature, well-maintained React emoji picker with built-in search, categories, skin tone selection, and frequently-used tracking. It handles the full Unicode emoji dataset and provides a polished UX out of the box. Trade-off: adds a dependency (~200KB bundled with data)."
+        selected: true
+      - option: "Use emoji-picker-react library"
+        description: "Another popular React emoji picker with similar features. Slightly simpler API but less customizable. Trade-off: adds a dependency, less community adoption than emoji-mart."
+        selected: false
+      - option: "Build custom picker from scratch"
+        description: "Full control over UI and bundle size. Can start minimal and grow. Trade-off: significant implementation effort for emoji data management, search, categories, and skin tone support. Not justified for an S-sized feature."
+        selected: false
+    selectionRationale: "emoji-mart is recommended because it is the most widely adopted React emoji picker, has excellent TypeScript support, handles the complete emoji dataset with search and categories, and respects theming. For an S-sized feature on a starter template, leveraging a proven library is the pragmatic choice over building from scratch."
+    answer: "Use emoji-mart library"
+
+  - question: "How should the emoji picker be integrated into the existing app layout?"
+    resolved: true
+    options:
+      - option: "New card section below existing demos"
+        description: "Add a new .card section in App.tsx below the counter and API demo cards. Contains a text input, emoji picker toggle button, and output display. Consistent with existing layout pattern. Non-disruptive to current UI."
+        selected: true
+      - option: "Replace the counter demo"
+        description: "Replace the counter card with the emoji picker demo. Reduces clutter but removes existing functionality that may serve as a reference."
+        selected: false
+      - option: "Separate route/page"
+        description: "Add client-side routing and put the emoji picker on its own page. Trade-off: requires adding a router dependency, over-engineering for this scope."
+        selected: false
+    selectionRationale: "A new card section is recommended because it follows the existing UI pattern (the app already has two .card sections), keeps existing demos intact for reference, and requires no architectural changes like routing."
+    answer: "New card section below existing demos"
+
+  - question: "Should the emoji picker support dark/light theme matching?"
+    resolved: true
+    options:
+      - option: "Yes, match system theme"
+        description: "Detect the user's prefers-color-scheme setting and pass the appropriate theme to the emoji picker. The app already has dark/light CSS via media queries, so the picker should be consistent. emoji-mart supports a theme prop."
+        selected: true
+      - option: "Dark theme only"
+        description: "Use dark theme always, matching the app's default appearance. Simpler but inconsistent for light-mode users."
+        selected: false
+    selectionRationale: "The existing app already respects prefers-color-scheme in its CSS. The emoji picker should match to provide a visually consistent experience. emoji-mart supports a 'theme' prop with 'auto' value that handles this natively."
+    answer: "Yes, match system theme"
+
+  - question: "Should a backend API endpoint be added for emoji-related data?"
+    resolved: true
+    options:
+      - option: "No backend changes"
+        description: "Keep the feature entirely frontend. The emoji picker library bundles its own emoji data. No persistence, no server-side processing. Simplest approach for an S-sized feature."
+        selected: true
+      - option: "Add emoji preferences endpoint"
+        description: "Add a Hono API route to store/retrieve user emoji preferences (frequently used, favorites). Trade-off: requires defining a storage strategy (KV, D1) and adds scope beyond what's needed for a demo."
+        selected: false
+    selectionRationale: "No backend changes are recommended because the emoji picker library includes all necessary emoji data client-side. Adding backend storage for a demo feature on a starter template is unnecessary scope creep. Backend integration can be added later if a messaging feature is built."
+    answer: "No backend changes"
+
+  - question: "What text input mechanism should accompany the emoji picker?"
+    resolved: true
+    options:
+      - option: "Textarea with emoji insertion at cursor"
+        description: "A standard HTML textarea where emojis are inserted at the current cursor position. Users can type text and mix it with emojis. The composed text is displayed below. Simple, accessible, and demonstrates real emoji usage."
+        selected: true
+      - option: "Display-only emoji grid"
+        description: "No text input — just show the emoji picker and display the last selected emoji. Minimal but doesn't demonstrate practical emoji usage in a text context."
+        selected: false
+      - option: "Rich text editor (contentEditable)"
+        description: "A contentEditable div for rich text with inline emoji rendering. Trade-off: contentEditable has well-known cross-browser issues and adds significant complexity."
+        selected: false
+    selectionRationale: "A textarea with cursor-position insertion is recommended because it demonstrates practical emoji usage (selecting an emoji inserts it into text you're composing), is accessible by default, and avoids the complexity of contentEditable. It provides a realistic UX pattern that could be reused in a future messaging feature."
+    answer: "Textarea with emoji insertion at cursor"
 
 content: |
   ## Problem Statement
 
   The finaviber application currently has no emoji support. The app is a minimal starter
   template (Vite + React + Hono + Cloudflare Workers) with a counter demo and a simple
-  API call. The user request is to "add emoji" — which in the context of this app means
-  introducing emoji selection and display capabilities to the React frontend.
+  API call. Adding emoji support means introducing a way for users to browse, search,
+  and select emojis and insert them into a text input — demonstrating a practical UI
+  pattern that could serve as the foundation for a future messaging feature.
 
-  Since the app has no chat or text-input features yet, this feature will need to either:
-  (a) add an emoji picker as a standalone UI component/demo section, or
-  (b) lay the groundwork for a future messaging feature by building the emoji infrastructure.
+  ## Success Criteria
+
+  - [ ] An emoji picker component is visible and functional in the app UI
+  - [ ] Users can open and close the emoji picker via a toggle button
+  - [ ] Users can browse emojis by category within the picker
+  - [ ] Users can search for emojis by keyword within the picker
+  - [ ] Selecting an emoji inserts its Unicode character into a textarea at the cursor position
+  - [ ] The textarea displays both typed text and inserted emojis correctly
+  - [ ] The emoji picker visually matches the app's dark/light theme (via prefers-color-scheme)
+  - [ ] The feature does not break existing counter and API demo functionality
+  - [ ] The app builds successfully with `npm run build` (TypeScript compilation + Vite bundling)
+  - [ ] The app lints cleanly with `npm run lint`
+
+  ## Functional Requirements
+
+  - **FR-1**: The app SHALL display a new "Emoji" section in the main UI, below the existing counter and API demo cards, following the same `.card` layout pattern.
+  - **FR-2**: The Emoji section SHALL contain a textarea for composing text and a button to toggle the emoji picker open/closed.
+  - **FR-3**: When the emoji picker is open, it SHALL display the full set of Unicode emojis organized by categories (e.g., Smileys, People, Animals, Food, Activities, Travel, Objects, Symbols, Flags).
+  - **FR-4**: The emoji picker SHALL provide a search input that filters emojis by keyword (e.g., typing "smile" shows smile-related emojis).
+  - **FR-5**: When a user clicks/taps an emoji in the picker, the emoji's native Unicode character SHALL be inserted into the textarea at the current cursor position.
+  - **FR-6**: After inserting an emoji, the textarea SHALL retain focus and the cursor SHALL be positioned immediately after the inserted emoji.
+  - **FR-7**: The emoji picker toggle button SHALL visually indicate whether the picker is currently open or closed.
+  - **FR-8**: The emoji picker SHALL be dismissable by clicking the toggle button again.
+  - **FR-9**: The emoji picker SHALL support skin tone selection for applicable emojis.
+
+  ## Non-Functional Requirements
+
+  - **NFR-1**: **Performance** — The emoji picker SHALL load without a noticeable delay. Lazy-loading the picker component or its data is acceptable to keep the initial page load fast.
+  - **NFR-2**: **Theming** — The emoji picker SHALL respect the user's system color scheme preference (`prefers-color-scheme`), rendering in dark mode or light mode accordingly, consistent with the existing app theming.
+  - **NFR-3**: **Accessibility** — The emoji picker toggle button SHALL have an accessible label (aria-label). The textarea SHALL have a visible label or placeholder text describing its purpose.
+  - **NFR-4**: **TypeScript** — All new code SHALL be fully typed with no `any` types. New components SHALL use proper React component typing.
+  - **NFR-5**: **Bundle size** — The emoji picker dependency (emoji-mart) adds ~200KB to the bundle. This is acceptable for this feature scope but should use the standard emoji-mart data import pattern to enable tree-shaking where possible.
+  - **NFR-6**: **Browser compatibility** — Emoji rendering relies on native Unicode support. The feature SHALL work on modern browsers (Chrome, Firefox, Safari, Edge — latest 2 versions) using native system emoji fonts.
+  - **NFR-7**: **Code organization** — The emoji picker functionality SHALL be implemented in a separate component file(s) under `src/react-app/`, not inlined entirely within `App.tsx`, to maintain separation of concerns.
+  - **NFR-8**: **No backend changes** — This feature SHALL be entirely frontend. No new API routes or backend dependencies.
+
+  ## Product Questions & AI Recommendations
+
+  | # | Question | AI Recommendation | Rationale |
+  | - | -------- | ----------------- | --------- |
+  | 1 | Use emoji picker library or build custom? | Use emoji-mart library | Mature, well-maintained, full emoji dataset with search/categories/skin tones. Pragmatic for S-sized feature. |
+  | 2 | How to integrate into existing layout? | New card section below existing demos | Follows existing .card pattern, non-disruptive, no architectural changes needed. |
+  | 3 | Support dark/light theme matching? | Yes, match system theme | App already respects prefers-color-scheme; emoji-mart supports theme='auto'. |
+  | 4 | Add backend API for emoji data? | No backend changes | Emoji data is bundled client-side. No persistence needed for a demo feature. |
+  | 5 | What text input mechanism? | Textarea with emoji insertion at cursor | Demonstrates practical usage, accessible by default, realistic UX pattern. |
 
   ## Codebase Analysis
 
@@ -90,33 +198,35 @@ content: |
 
   - **React 19** with hooks (`useState`) — the emoji picker will be a React component
   - **TypeScript** in strict mode — all new code must be fully typed
-  - **Hono 4.7** — if emoji data or preferences need a backend, routes are added here
-  - **Vite 6.3** — handles bundling; any new npm dependencies will be auto-bundled
+  - **Hono 4.7** — not affected by this feature (frontend-only)
+  - **Vite 6.3** — handles bundling; the emoji-mart dependency will be auto-bundled
   - **CSS** (plain) — styling uses vanilla CSS with CSS custom properties for theming
 
   ## Affected Areas
 
   | Area | Impact | Reasoning |
   | ---- | ------ | --------- |
-  | `src/react-app/App.tsx` | High | Main component where the emoji picker UI will be integrated |
-  | `src/react-app/App.css` | Medium | Styles needed for the emoji picker and display area |
-  | `src/react-app/` (new components) | High | Likely need new component file(s) for emoji picker |
-  | `package.json` | Low | May need to add an emoji picker library dependency |
-  | `src/worker/index.ts` | Low | Only affected if emoji data or preferences need a backend endpoint |
+  | `src/react-app/App.tsx` | Medium | Add the new emoji card section, import the new EmojiPicker component |
+  | `src/react-app/App.css` | Medium | Styles for the emoji section layout, textarea, and toggle button |
+  | `src/react-app/` (new components) | High | New EmojiPicker component file wrapping emoji-mart with app-specific logic |
+  | `package.json` | Low | Add emoji-mart and @emoji-mart/data as dependencies |
+  | `src/worker/index.ts` | None | No backend changes needed |
 
   ## Dependencies
 
   - **React 19** — component rendering and state management for the picker
-  - **Potential new dependency**: An emoji picker library like `emoji-mart` or `emoji-picker-react` would significantly reduce implementation effort vs. building from scratch
-  - **CSS**: Existing global styles and theming (dark/light mode support in `index.css`) should be respected by any new emoji UI
+  - **emoji-mart** — third-party emoji picker component providing the full emoji browsing, search, and selection UI
+  - **@emoji-mart/data** — emoji dataset used by emoji-mart
+  - **@emoji-mart/react** — React bindings for emoji-mart
+  - **CSS** — existing global styles and theming (dark/light mode support in `index.css`) will be respected by the emoji picker via its theme prop
 
   ## Size Estimate
 
-  **S** — The codebase is minimal (a starter template) with very few files. Adding an emoji picker
-  component — whether via a library or a simple custom implementation — involves creating 1-2 new
-  component files, adding styles, and wiring it into `App.tsx`. No complex backend work, no database,
-  no migration. Estimated effort: a few hours.
+  **S** — The codebase is minimal (a starter template) with very few files. The feature involves:
+  installing emoji-mart, creating 1 new component file for the emoji picker wrapper, adding a new
+  card section to App.tsx with a textarea and toggle button, and adding corresponding styles.
+  No backend work, no database, no routing changes, no complex state management.
 
   ---
 
-  _Analysis completed by feature agent_
+  _Requirements defined by feature agent_
