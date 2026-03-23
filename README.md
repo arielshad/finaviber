@@ -28,7 +28,7 @@ Get started in minutes with local development or deploy directly via the Cloudfl
 
 <!-- dash-content-end -->
 
-## Getting Started
+## 🚀 Getting Started
 
 To start a new project with this template, run:
 
@@ -39,7 +39,7 @@ npm create cloudflare@latest -- --template=cloudflare/templates/vite-react-templ
 A live deployment of this template is available at:
 [https://react-vite-template.templates.workers.dev](https://react-vite-template.templates.workers.dev)
 
-## Development
+## 💻 Development
 
 Install dependencies:
 
@@ -55,7 +55,7 @@ npm run dev
 
 Your application will be available at [http://localhost:5173](http://localhost:5173).
 
-## Production
+## 🏗️ Production
 
 Build your project for production:
 
@@ -75,7 +75,7 @@ Deploy your project to Cloudflare Workers:
 npm run build && npm run deploy
 ```
 
-## Additional Resources
+## 📚 Additional Resources
 
 - [Cloudflare Workers Documentation](https://developers.cloudflare.com/workers/)
 - [Vite Documentation](https://vitejs.dev/guide/)
