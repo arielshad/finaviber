@@ -8,7 +8,7 @@ summary: >
   Append the sheep emoji (🐑) to the end of the README.md file. This is a
   documentation-only change that does not affect any application code, build
   configuration, or runtime behavior.
-phase: "Analysis"
+phase: "Requirements"
 sizeEstimate: "S"
 
 relatedFeatures: []
@@ -18,43 +18,81 @@ technologies:
 
 relatedLinks: []
 
-openQuestions: []
+openQuestions:
+  - question: "Should the sheep emoji be on its own line or appended to the last existing line?"
+    resolved: true
+    options:
+      - option: "Own line"
+        description: "Place the sheep emoji on a new line at the very end of the file, separated from existing content. This is the most natural interpretation of 'add to the bottom' and keeps the emoji visually distinct."
+        selected: true
+      - option: "Append to last line"
+        description: "Append the emoji to the end of the last existing line of content. This is more compact but less visually clear and changes an existing line."
+        selected: false
+    selectionRationale: "Own line is recommended because the user said 'add to the bottom,' which implies a new line of content rather than modifying existing text. A standalone line keeps existing content untouched and makes the emoji clearly visible."
+    answer: "Own line"
+
+  - question: "Should there be a trailing newline after the sheep emoji?"
+    resolved: true
+    options:
+      - option: "Yes, trailing newline"
+        description: "End the file with a newline character after the emoji. This follows POSIX conventions and avoids 'no newline at end of file' warnings in diffs."
+        selected: true
+      - option: "No trailing newline"
+        description: "End the file immediately after the emoji character. Simpler but produces diff warnings and violates common file conventions."
+        selected: false
+    selectionRationale: "A trailing newline is recommended because it follows POSIX file conventions, avoids 'No newline at end of file' warnings in git diffs, and is consistent with the existing file which already ends with a trailing newline."
+    answer: "Yes, trailing newline"
+
+  - question: "Should the emoji be separated from the preceding content by a blank line?"
+    resolved: true
+    options:
+      - option: "Yes, blank line separator"
+        description: "Add a blank line between the last section of the README and the sheep emoji. This creates visual separation and treats the emoji as its own section."
+        selected: true
+      - option: "No blank line separator"
+        description: "Place the emoji on the very next line after existing content with no blank line. This is more compact but may look cramped."
+        selected: false
+    selectionRationale: "A blank line separator is recommended because the existing README uses blank lines between sections, and the file already ends with a blank line after the last content. Adding the emoji after this existing blank line maintains visual consistency."
+    answer: "Yes, blank line separator"
 
 content: |
   ## Problem Statement
 
-  The user wants a sheep emoji (🐑) appended to the bottom of the project's README.md file. The README currently ends after an "Additional Resources" section with links to documentation for Cloudflare Workers, Vite, React, and Hono.
+  The user wants a sheep emoji (🐑) appended to the bottom of the project's README.md file. The README currently ends after an "Additional Resources" section with links to documentation for Cloudflare Workers, Vite, React, and Hono. The file ends with a trailing blank line at line 84.
 
-  ## Codebase Analysis
+  ## Success Criteria
 
-  ### Project Structure
-  This is a React + Vite + Hono application deployed on Cloudflare Workers. Key directories:
-  - `src/react-app/` — React frontend (App.tsx, main.tsx, CSS, assets)
-  - `src/worker/` — Cloudflare Worker backend (index.ts with Hono)
-  - `public/` — Static assets (vite.svg)
-  - `specs/` — Feature specification files (this feature)
-  - Root config files — vite.config.ts, tsconfig.json variants, wrangler.json, eslint.config.js, package.json
+  - [ ] The sheep emoji (🐑) appears as the last visible content in README.md
+  - [ ] All existing README.md content above the emoji is preserved byte-for-byte
+  - [ ] The file remains valid Markdown after the change
+  - [ ] The file ends with a trailing newline (POSIX convention)
+  - [ ] The emoji is on its own line, separated from preceding content by a blank line
 
-  ### Architecture Patterns
-  - Vite-based build pipeline with TypeScript
-  - React 19 frontend with Hono backend running on Cloudflare Workers
-  - ESLint for linting, Wrangler for deployment
-  - Standard npm scripts: dev, build, preview, deploy, lint, check
+  ## Functional Requirements
 
-  ### Relevant Technologies
-  - Markdown — README.md is a standard Markdown file; no special rendering or processing pipeline applies to it
+  - **FR-1**: Append the Unicode sheep emoji character (🐑, U+1F411) to the end of README.md on its own line
+  - **FR-2**: Preserve all existing content in README.md without modification — no lines added, removed, or changed above the insertion point
+  - **FR-3**: Maintain a blank line between the last existing content (Additional Resources links) and the sheep emoji line
+
+  ## Non-Functional Requirements
+
+  - **NFR-1**: The file must end with a trailing newline character to comply with POSIX conventions and avoid git diff warnings
+  - **NFR-2**: The file must remain valid Markdown — the emoji must not break any existing Markdown rendering
+  - **NFR-3**: The change must be limited to README.md only — no other files in the repository should be modified (aside from spec files)
+
+  ## Product Questions & AI Recommendations
+
+  | # | Question | AI Recommendation | Rationale |
+  | - | -------- | ----------------- | --------- |
+  | 1 | Should the sheep emoji be on its own line or appended to the last existing line? | Own line | The user said "add to the bottom," implying a new line of content. Keeps existing content untouched. |
+  | 2 | Should there be a trailing newline after the sheep emoji? | Yes | Follows POSIX conventions, avoids git diff warnings, consistent with existing file format. |
+  | 3 | Should the emoji be separated from preceding content by a blank line? | Yes | Maintains visual consistency with the README's existing section spacing pattern. |
 
   ## Affected Areas
 
   | Area | Impact | Reasoning |
   | ---- | ------ | --------- |
   | README.md | Low | Single line appended to the end of the file; no structural changes |
-
-  ## Success Criteria
-
-  - [x] The sheep emoji (🐑) appears as the last content in README.md
-  - [x] The existing README content is preserved unchanged
-  - [x] The file remains valid Markdown
 
   ## Dependencies
 
