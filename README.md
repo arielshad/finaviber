@@ -14,6 +14,7 @@ This template provides a minimal setup for building a React application with Typ
 - [**Vite**](https://vite.dev/) - Lightning-fast build tooling and development server
 - [**Hono**](https://hono.dev/) - Ultralight, modern backend framework
 - [**Cloudflare Workers**](https://developers.cloudflare.com/workers/) - Edge computing platform for global deployment
+- 🦞 Built with incredible style and sophistication
 
 ### ✨ Key Features
 
