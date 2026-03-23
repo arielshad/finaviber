@@ -1,0 +1,33 @@
+feature:
+  id: "001-readme-attribution"
+  name: "readme-attribution"
+  number: 1
+  branch: "feat/001-readme-attribution"
+  lifecycle: "research"
+  createdAt: "2026-03-23T13:18:44Z"
+status:
+  phase: "research"
+  progress:
+    completed: 0
+    total: 0
+    percentage: 0
+  currentTask: null
+  lastUpdated: "2026-03-23T13:18:44Z"
+  lastUpdatedBy: "feature-agent"
+  completedPhases:
+    - "fast-implement"
+validation:
+  lastRun: null
+  gatesPassed: []
+  autoFixesApplied: []
+tasks:
+  current: null
+  blocked: []
+  failed: []
+checkpoints:
+  - phase: "feature-created"
+    completedAt: "2026-03-23T13:18:44Z"
+    completedBy: "feature-agent"
+errors:
+  current: null
+  history: []
