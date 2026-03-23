@@ -1,0 +1,60 @@
+name: "readme-sheep-emoji"
+summary: >
+  2 tasks across 1 phase. One task to append the sheep emoji to README.md,
+  and one task to verify the change via git diff.
+
+relatedFeatures: []
+technologies:
+  - "Markdown"
+  - "UTF-8"
+relatedLinks:
+  - title: "Unicode Emoji Chart — Animals & Nature (U+1F411)"
+    url: "https://unicode.org/emoji/charts/full-emoji-list.html#1f411"
+
+tasks:
+  - id: "task-1"
+    phaseId: "phase-1"
+    title: "Append sheep emoji to README.md"
+    description: "Add the sheep emoji (🐑) on its own line at the end of README.md, after the existing blank line separator, with a trailing newline."
+    state: "Todo"
+    dependencies: []
+    acceptanceCriteria:
+      - "Line 85 of README.md contains exactly the sheep emoji character (🐑, U+1F411)"
+      - "Line 84 is a blank line separating the emoji from the last content section"
+      - "Lines 1–83 are unchanged from the original file"
+      - "The file ends with a trailing newline character (LF)"
+      - "The file remains valid Markdown"
+    tdd:
+      red:
+        - "Read the current README.md and confirm line 83 is the last content line and line 84 is a blank trailing line"
+      green:
+        - "Append 🐑 followed by a newline to the end of README.md, producing line 85 with the emoji"
+      refactor:
+        - "No refactoring needed — this is a single-line documentation addition"
+    estimatedEffort: "5min"
+
+  - id: "task-2"
+    phaseId: "phase-1"
+    title: "Verify the change via git diff"
+    description: "Run git diff to confirm only the expected addition was made: one new line containing the sheep emoji, no modifications to existing content."
+    state: "Todo"
+    dependencies:
+      - "task-1"
+    acceptanceCriteria:
+      - "git diff shows only added lines at the end of README.md (the emoji line)"
+      - "No existing lines are shown as modified or deleted"
+      - "No 'No newline at end of file' warning appears in the diff"
+    tdd: null
+    estimatedEffort: "2min"
+
+totalEstimate: "7min"
+openQuestions: []
+
+content: |
+  ## Summary
+
+  The implementation consists of a single edit to README.md followed by verification.
+  First, the sheep emoji is appended to the end of the file on its own line, maintaining
+  the existing blank-line separator pattern and trailing newline convention. Then a git
+  diff confirms the change is correct and no existing content was modified. No code
+  changes, no tests, no build steps — this is purely a documentation edit.

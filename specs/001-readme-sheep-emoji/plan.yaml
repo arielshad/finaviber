@@ -1,0 +1,88 @@
+name: "readme-sheep-emoji"
+summary: >
+  Append the sheep emoji (🐑) to README.md on its own line at the end of the file,
+  separated from existing content by a blank line, with a trailing newline. This is a
+  direct file edit requiring no libraries, no build steps, and no code changes. The
+  implementation uses the literal UTF-8 emoji character to match the existing README
+  conventions.
+
+relatedFeatures: []
+technologies:
+  - "Markdown"
+  - "UTF-8"
+relatedLinks:
+  - title: "Unicode Emoji Chart — Animals & Nature (U+1F411)"
+    url: "https://unicode.org/emoji/charts/full-emoji-list.html#1f411"
+  - title: "POSIX Line Definition (3.206)"
+    url: "https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html#tag_03_206"
+
+phases:
+  - id: "phase-1"
+    name: "Append Sheep Emoji"
+    description: "Append the sheep emoji line to README.md with proper spacing and trailing newline. This is the only phase since the change is a single-line addition to a documentation file."
+    parallel: false
+
+filesToCreate: []
+
+filesToModify:
+  - "README.md"
+
+openQuestions: []
+
+content: |
+  ## Architecture Overview
+
+  README.md is a standalone Markdown documentation file at the repository root. It is not
+  imported, referenced, or processed by any application code or build pipeline. The file
+  uses UTF-8 encoding with LF line endings and already contains literal emoji characters
+  (🚀, 🔥, 📦, 🛠️, ⚡, 🎯, 🔄) on lines 11–25.
+
+  The file currently has 84 lines (2,577 bytes). Line 83 is the last content line
+  (`- [Hono Documentation](https://hono.dev/)`), and line 84 is a trailing blank line
+  (single `\n`). After the edit, the file will have 85 lines: line 84 remains the blank
+  separator, and line 85 is the sheep emoji followed by a trailing newline.
+
+  ## Key Design Decisions
+
+  ### 1. Direct File Edit (no scripting or tooling)
+
+  The file will be edited directly by appending `🐑\n` after the existing trailing blank
+  line. No scripts, preprocessors, or build tools are involved. This is the simplest
+  approach and preserves all existing content byte-for-byte.
+
+  **Rejected alternatives:**
+  - Shell scripting (`echo >> README.md`) — unnecessary complexity, risk of encoding issues
+  - Markdown preprocessor — massive overkill for one character
+
+  ### 2. Literal UTF-8 Emoji Character
+
+  The sheep emoji will be inserted as a literal UTF-8 character (🐑, U+1F411, 4 bytes:
+  `F0 9F 90 91`), consistent with the existing emoji usage throughout the README.
+
+  **Rejected alternatives:**
+  - HTML entity (`&#x1F411;`) — renders as raw text in terminals and some viewers
+  - Markdown image with CDN — adds external dependency, not what the user requested
+
+  ### 3. LF Line Endings with Trailing Newline
+
+  The file uses LF (`0x0A`) exclusively. The edit maintains this convention. The file
+  ends with a trailing newline to satisfy POSIX conventions and avoid git diff warnings.
+
+  ## Implementation Strategy
+
+  This is a single-phase implementation. The only action is to append `🐑\n` to the end
+  of README.md. The existing file already ends with a blank line (`\n` on line 84), so
+  appending `🐑\n` produces the correct structure: blank line separator, emoji on its own
+  line, trailing newline.
+
+  Verification is done via git diff to confirm only the expected addition was made and no
+  existing content was modified.
+
+  ## Risk Mitigation
+
+  | Risk | Mitigation |
+  | ---- | ---------- |
+  | Existing README content modified accidentally | Verify via git diff that only lines 85+ are added; all lines 1–84 must be unchanged |
+  | Emoji encoding issues (wrong character or mojibake) | Use literal UTF-8 character; confirm the 4-byte sequence F0 9F 90 91 in the diff |
+  | Missing trailing newline | Verify file ends with 0x0A via git diff (no "No newline at end of file" warning) |
+  | Line ending inconsistency (CRLF introduced) | Edit tool preserves existing LF convention; verify no 0x0D bytes in diff |
