@@ -1,0 +1,185 @@
+# Research Artifact (YAML)
+# This is the source of truth. Markdown is auto-generated from this file.
+
+name: "readme-sheep-emoji"
+summary: >
+  This is a trivial documentation-only change requiring no libraries, no build steps,
+  and no code modifications. The sheep emoji (U+1F411) will be appended to the end of
+  README.md on its own line with a blank line separator and trailing newline, matching
+  the file's existing UTF-8 encoding and POSIX conventions.
+
+relatedFeatures: []
+
+technologies:
+  - "Markdown"
+  - "UTF-8"
+
+relatedLinks:
+  - title: "Unicode Emoji Chart — Animals & Nature"
+    url: "https://unicode.org/emoji/charts/full-emoji-list.html#1f411"
+  - title: "POSIX Line Definition (3.206)"
+    url: "https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html#tag_03_206"
+
+decisions:
+  - title: "Edit Method — Direct file append vs. programmatic tooling"
+    chosen: "Direct file edit (append lines to README.md)"
+    rejected:
+      - "Scripted approach (e.g., echo >> README.md) — unnecessary complexity for a single static edit; introduces risk of encoding issues or double newlines depending on shell behavior"
+      - "Markdown preprocessor or template engine — massive overkill for appending one character; adds tooling dependencies where none are needed"
+    rationale: >
+      The simplest and most reliable approach is to directly edit README.md by appending
+      the emoji line. The file is a static Markdown document with no templating or
+      generation pipeline. A direct edit preserves all existing content byte-for-byte and
+      is trivially verifiable via git diff. No tooling, scripts, or dependencies are
+      required.
+
+  - title: "Emoji Encoding — Literal Unicode character vs. HTML entity"
+    chosen: "Literal UTF-8 emoji character (🐑)"
+    rejected:
+      - "HTML entity (&#x1F411; or &#128017;) — renders correctly in browsers but displays as raw text in terminals, plain-text viewers, and some Markdown renderers; less readable in source"
+      - "Markdown image with emoji CDN (e.g., ![sheep](url)) — adds external dependency, breaks offline rendering, fundamentally different from what the user requested"
+    rationale: >
+      The existing README.md already uses literal emoji characters throughout (🚀, 🔥, 📦,
+      🛠️, ⚡, 🎯, 🔄 on lines 11-25). Using a literal UTF-8 sheep emoji character is
+      consistent with the established pattern. The file is already UTF-8 encoded, so no
+      encoding changes are needed. Literal emoji renders correctly across GitHub, VS Code,
+      terminals, and all modern Markdown viewers.
+
+  - title: "Line Ending Convention — LF vs. CRLF"
+    chosen: "LF (Unix-style, 0x0A)"
+    rejected:
+      - "CRLF (Windows-style, 0x0D 0x0A) — the existing file uses LF exclusively; mixing line endings would cause git warnings and inconsistent diffs"
+      - "No trailing newline — violates POSIX convention, causes 'No newline at end of file' warning in git diff, inconsistent with existing file format"
+    rationale: >
+      Hex inspection of README.md confirms all line endings are LF (0x0A) with no CR
+      bytes present. The file ends with a single 0x0A after the last content line. Using
+      LF maintains consistency. The final file must end with LF after the emoji line to
+      satisfy POSIX conventions and avoid git diff warnings.
+
+openQuestions:
+  - question: "What exact bytes should be appended to the file?"
+    resolved: true
+    options:
+      - option: "Append \\n🐑\\n (blank line + emoji + trailing newline)"
+        description: "Adds a blank line separator (since the file already ends with \\n, appending \\n creates a blank line), then the emoji on its own line, then a trailing newline. This produces the correct visual layout and satisfies all requirements."
+        selected: true
+      - option: "Append \\n\\n🐑\\n (extra newline + blank line + emoji + trailing newline)"
+        description: "Would create two blank lines between the last content and the emoji, which is excessive and inconsistent with the single-blank-line spacing used throughout the README."
+        selected: false
+      - option: "Append 🐑\\n (emoji + trailing newline only, no blank line)"
+        description: "Would place the emoji immediately after the existing trailing newline with no blank line separator. The emoji would appear visually adjacent to the last link, which looks cramped and is inconsistent with the README's section spacing."
+        selected: false
+    selectionRationale: >
+      The file currently ends with: ...[Hono Documentation](https://hono.dev/)\n. Appending
+      \n🐑\n produces: ...[Hono Documentation](https://hono.dev/)\n\n🐑\n — which means
+      a blank line between the last link and the emoji, the emoji on its own line, and a
+      trailing newline. This matches all spec requirements and the file's existing spacing
+      conventions.
+
+  - question: "Should any validation be performed after the edit?"
+    resolved: true
+    options:
+      - option: "Git diff review only"
+        description: "Review the git diff to confirm only the expected lines were added at the end of the file. Simple, sufficient, and requires no additional tooling."
+        selected: true
+      - option: "Markdown linting (e.g., markdownlint)"
+        description: "Run a Markdown linter to validate the file. Overkill for a single emoji append and the project has no existing Markdown linting configuration."
+        selected: false
+      - option: "Byte-level file comparison"
+        description: "Compare file checksums or do byte-level diff. Unnecessarily complex for a change that is trivially visible in a standard git diff."
+        selected: false
+    selectionRationale: >
+      A git diff is the simplest and most appropriate validation for this change. It will
+      clearly show the added lines and confirm no existing content was modified. The project
+      has no Markdown linting setup, so adding one for this change would be unnecessary scope
+      creep.
+
+  - question: "Is there any risk of the emoji breaking Markdown rendering?"
+    resolved: true
+    options:
+      - option: "No risk — emoji on a standalone line is safe"
+        description: "A standalone emoji on its own line in Markdown is rendered as a paragraph containing only the emoji. This is well-supported across all Markdown renderers (GitHub, CommonMark, etc.) and cannot interfere with surrounding content."
+        selected: true
+      - option: "Low risk — could be misinterpreted as Markdown syntax"
+        description: "Some emoji could theoretically be misinterpreted, but 🐑 does not resemble any Markdown syntax characters (*, _, #, -, etc.) and is safe."
+        selected: false
+      - option: "Medium risk — could cause encoding issues"
+        description: "If the file were not UTF-8 or the editor injected BOM characters, there could be issues. However, the file is confirmed UTF-8 and the emoji is a standard Unicode character."
+        selected: false
+    selectionRationale: >
+      The sheep emoji (U+1F411) is a standard Unicode emoji that does not resemble any
+      Markdown syntax. Placed on its own line, it will be parsed as a simple paragraph
+      element. The README already contains multiple emoji characters that render correctly.
+      There is zero risk of breaking Markdown rendering.
+
+content: |
+  ## Technology Decisions
+
+  ### 1. Edit Method — Direct file append vs. programmatic tooling
+
+  **Chosen:** Direct file edit (append lines to README.md)
+
+  **Rejected:**
+  - Scripted approach (e.g., `echo >> README.md`) — unnecessary complexity for a single static edit; risk of encoding issues or double newlines depending on shell behavior
+  - Markdown preprocessor or template engine — massive overkill for appending one character; adds tooling dependencies where none are needed
+
+  **Rationale:** The simplest and most reliable approach is to directly edit README.md by appending the emoji line. The file is a static Markdown document with no templating or generation pipeline. A direct edit preserves all existing content byte-for-byte and is trivially verifiable via git diff.
+
+  ### 2. Emoji Encoding — Literal Unicode character vs. HTML entity
+
+  **Chosen:** Literal UTF-8 emoji character (🐑)
+
+  **Rejected:**
+  - HTML entity (`&#x1F411;`) — renders correctly in browsers but displays as raw text in terminals and some Markdown renderers; less readable in source
+  - Markdown image with emoji CDN — adds external dependency, breaks offline rendering, not what the user requested
+
+  **Rationale:** The existing README.md already uses literal emoji characters throughout (🚀, 🔥, 📦, 🛠️, ⚡, 🎯, 🔄 on lines 11–25). Using a literal UTF-8 sheep emoji character is consistent with the established pattern and requires no encoding changes.
+
+  ### 3. Line Ending Convention — LF vs. CRLF
+
+  **Chosen:** LF (Unix-style, `0x0A`)
+
+  **Rejected:**
+  - CRLF (`0x0D 0x0A`) — the existing file uses LF exclusively; mixing line endings would cause git warnings
+  - No trailing newline — violates POSIX convention, causes git diff warnings
+
+  **Rationale:** Hex inspection confirms all existing line endings are LF. The final file must end with LF after the emoji line.
+
+  ## Library Analysis
+
+  | Library | Purpose | Decision | Reasoning |
+  | ------- | ------- | -------- | --------- |
+  | N/A     | N/A     | N/A      | No libraries are needed. This is a direct file edit to a static Markdown document. |
+
+  ## Security Considerations
+
+  **No security implications.** This change:
+  - Modifies only a documentation file (README.md)
+  - Does not affect any application code, configuration, or runtime behavior
+  - Does not introduce any external dependencies
+  - Does not expose any sensitive information
+  - The emoji character is a standard Unicode code point with no special behavior
+
+  ## Performance Implications
+
+  **No performance implications.** This change:
+  - Adds 6 bytes to a 2,577-byte file (the emoji is 4 bytes UTF-8 + 2 newline bytes)
+  - Does not affect build times, bundle size, or runtime performance
+  - README.md is not part of the application build pipeline
+
+  ## Architecture Notes
+
+  **No architectural impact.** The README.md file is a standalone documentation file at the repository root. It is not imported, included, or referenced by any application code. The change is purely cosmetic and documentation-scoped.
+
+  ### File Structure After Edit
+
+  The README.md will change from 83 lines (2,577 bytes) to 85 lines (2,583 bytes):
+  - Line 83: `- [Hono Documentation](https://hono.dev/)` (unchanged)
+  - Line 84: (blank line — separator)
+  - Line 85: `🐑` (followed by trailing newline)
+
+  ### Implementation Plan
+
+  1. Append `\n🐑\n` to the end of README.md (the existing file already ends with `\n`, so this creates a blank line, the emoji line, and a trailing newline)
+  2. Verify via git diff that only the expected 2 lines were added
+  3. Confirm no existing content was modified
