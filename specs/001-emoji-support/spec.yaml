@@ -1,0 +1,122 @@
+# Feature Specification (YAML)
+# This is the source of truth. Markdown is auto-generated from this file.
+
+name: "emoji-support"
+number: "001"
+branch: "feat/001-emoji-support"
+oneLiner: "Add emoji picker and rendering support to the chat/messaging UI"
+summary: >
+  Add emoji support to the finaviber application. Since the current app is a minimal
+  Vite + React + Hono + Cloudflare Workers template with only a counter and API demo,
+  this feature will introduce an emoji picker component in the React frontend that allows
+  users to select and insert emojis. This may also involve backend considerations if emoji
+  data needs to be stored or processed through the Hono API layer.
+phase: "Analysis"
+sizeEstimate: "S"
+
+relatedFeatures: []
+
+technologies:
+  - "React 19"
+  - "TypeScript"
+  - "Vite"
+  - "Hono"
+  - "Cloudflare Workers"
+  - "CSS"
+
+relatedLinks:
+  - title: "emoji-mart - Emoji picker component for React"
+    url: "https://github.com/missive/emoji-mart"
+  - title: "React 19 Documentation"
+    url: "https://react.dev"
+  - title: "Hono Documentation"
+    url: "https://hono.dev"
+
+openQuestions:
+  - "What is the intended use context for emojis — is this for a future chat/messaging feature, or should emojis be added to the existing demo UI (e.g., emoji reactions on the counter)?"
+  - "Should emoji selection persist (e.g., stored via the Hono API) or be purely client-side?"
+  - "Should a third-party emoji picker library (e.g., emoji-mart) be used, or should a custom minimal picker be built?"
+  - "What emoji set should be supported — native OS emojis, or a cross-platform sprite set (e.g., Twitter/Google)?"
+
+content: |
+  ## Problem Statement
+
+  The finaviber application currently has no emoji support. The app is a minimal starter
+  template (Vite + React + Hono + Cloudflare Workers) with a counter demo and a simple
+  API call. The user request is to "add emoji" — which in the context of this app means
+  introducing emoji selection and display capabilities to the React frontend.
+
+  Since the app has no chat or text-input features yet, this feature will need to either:
+  (a) add an emoji picker as a standalone UI component/demo section, or
+  (b) lay the groundwork for a future messaging feature by building the emoji infrastructure.
+
+  ## Codebase Analysis
+
+  ### Project Structure
+
+  ```
+  /
+  ├── src/
+  │   ├── react-app/          # Frontend React application
+  │   │   ├── App.tsx          # Main app component (counter + API demo)
+  │   │   ├── App.css          # Component styles
+  │   │   ├── main.tsx         # React entry point (createRoot)
+  │   │   ├── index.css        # Global styles (dark/light theme)
+  │   │   ├── vite-env.d.ts    # Vite type declarations
+  │   │   └── assets/          # SVG logos (React, Vite, Hono, Cloudflare)
+  │   └── worker/
+  │       └── index.ts         # Hono API server (single GET /api/ route)
+  ├── public/                  # Static assets (vite.svg)
+  ├── index.html               # HTML entry point
+  ├── vite.config.ts           # Vite + Cloudflare plugin config
+  ├── wrangler.json            # Cloudflare Workers config
+  ├── eslint.config.js         # ESLint with React hooks + refresh plugins
+  ├── tsconfig.json            # Root TS config (references app, node, worker)
+  ├── tsconfig.app.json        # React app TS config (strict, react-jsx)
+  ├── tsconfig.worker.json     # Worker TS config
+  └── package.json             # Dependencies and scripts
+  ```
+
+  ### Architecture Patterns
+
+  - **Two-layer architecture**: React SPA frontend + Hono API backend, both deployed as a single Cloudflare Worker
+  - **Vite bundling**: The Cloudflare Vite plugin handles both frontend bundling and worker compilation
+  - **SPA routing**: Wrangler configured with `not_found_handling: "single-page-application"` for client-side routing
+  - **Minimal component structure**: Single `App.tsx` component with no routing, state management library, or component hierarchy
+  - **No component library**: Raw HTML elements with custom CSS — no UI framework (e.g., no Tailwind, no MUI)
+  - **No testing setup**: No test framework, no test files
+
+  ### Relevant Technologies
+
+  - **React 19** with hooks (`useState`) — the emoji picker will be a React component
+  - **TypeScript** in strict mode — all new code must be fully typed
+  - **Hono 4.7** — if emoji data or preferences need a backend, routes are added here
+  - **Vite 6.3** — handles bundling; any new npm dependencies will be auto-bundled
+  - **CSS** (plain) — styling uses vanilla CSS with CSS custom properties for theming
+
+  ## Affected Areas
+
+  | Area | Impact | Reasoning |
+  | ---- | ------ | --------- |
+  | `src/react-app/App.tsx` | High | Main component where the emoji picker UI will be integrated |
+  | `src/react-app/App.css` | Medium | Styles needed for the emoji picker and display area |
+  | `src/react-app/` (new components) | High | Likely need new component file(s) for emoji picker |
+  | `package.json` | Low | May need to add an emoji picker library dependency |
+  | `src/worker/index.ts` | Low | Only affected if emoji data or preferences need a backend endpoint |
+
+  ## Dependencies
+
+  - **React 19** — component rendering and state management for the picker
+  - **Potential new dependency**: An emoji picker library like `emoji-mart` or `emoji-picker-react` would significantly reduce implementation effort vs. building from scratch
+  - **CSS**: Existing global styles and theming (dark/light mode support in `index.css`) should be respected by any new emoji UI
+
+  ## Size Estimate
+
+  **S** — The codebase is minimal (a starter template) with very few files. Adding an emoji picker
+  component — whether via a library or a simple custom implementation — involves creating 1-2 new
+  component files, adding styles, and wiring it into `App.tsx`. No complex backend work, no database,
+  no migration. Estimated effort: a few hours.
+
+  ---
+
+  _Analysis completed by feature agent_
