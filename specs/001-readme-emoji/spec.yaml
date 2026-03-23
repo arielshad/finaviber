@@ -3,11 +3,11 @@ number: 1
 branch: "feat/001-readme-emoji"
 oneLiner: "Add emoji to README section headings and content for visual enhancement"
 summary: >
-  The README.md already uses emoji in the dash-content section (lines 11-27) but the rest of the
-  file — Getting Started, Development, Production, and Additional Resources sections — lacks emoji.
-  This feature adds emoji to those remaining section headings and key content areas for visual
-  consistency throughout the document.
-phase: "Analysis"
+  The README.md uses emoji extensively in the dash-content section (lines 11-27) but the remaining
+  sections — Getting Started, Development, Production, and Additional Resources — use plain text
+  headings and content with no emoji. This feature adds emoji to those remaining section headings
+  and key content lines to create visual consistency throughout the document.
+phase: "Requirements"
 sizeEstimate: "S"
 
 relatedFeatures: []
@@ -17,38 +17,108 @@ technologies:
 
 relatedLinks: []
 
-openQuestions: []
+openQuestions:
+  - question: "Should emoji be added only to section headings, or also to content lines within sections?"
+    resolved: true
+    options:
+      - option: "Headings only"
+        description: "Add emoji only to ## headings (Getting Started, Development, Production, Additional Resources). Minimal change, clean look, keeps body text readable."
+        selected: false
+      - option: "Headings and key content"
+        description: "Add emoji to ## headings and also to select content lines like the Additional Resources link list. Matches the dash-content section's style more closely."
+        selected: true
+      - option: "Headings and all bullet/list items"
+        description: "Add emoji to every heading, bullet point, and list item. Maximum consistency with dash-content but may feel excessive in instructional sections with code blocks."
+        selected: false
+    selectionRationale: "The dash-content section uses emoji on both its heading and bullet items. Matching this pattern in the rest of the README by adding emoji to headings and key content lines (like resource links) creates visual consistency without over-decorating instructional code-block sections."
+    answer: "Headings and key content"
+
+  - question: "What emoji style should be used for section headings?"
+    resolved: true
+    options:
+      - option: "Topic-relevant emoji"
+        description: "Each heading gets an emoji that reflects its content (e.g., rocket for Getting Started, hammer for Development, package for Production, books for Resources). More expressive and visually distinctive."
+        selected: true
+      - option: "Uniform single emoji"
+        description: "All headings use the same emoji (e.g., all use a star or arrow). Simpler but less informative and visually monotonous."
+        selected: false
+    selectionRationale: "The dash-content section already uses topic-relevant emoji (rocket, fire, package, etc.). Using topic-relevant emoji for the remaining headings maintains this established pattern and helps readers quickly identify sections."
+    answer: "Topic-relevant emoji"
+
+  - question: "Should the Additional Resources link list items each get an individual emoji?"
+    resolved: true
+    options:
+      - option: "Individual emoji per link"
+        description: "Each resource link gets a relevant emoji (e.g., cloud for Cloudflare, lightning for Vite, atom for React, fire for Hono). Mirrors the dash-content bullet style exactly."
+        selected: true
+      - option: "No emoji on individual links"
+        description: "Only the section heading gets an emoji; the link list stays plain. Keeps the list clean but diverges from the dash-content pattern."
+        selected: false
+    selectionRationale: "The dash-content section decorates each bullet item with a relevant emoji. Applying the same treatment to the Additional Resources list creates full visual consistency. Each technology already has a recognizable emoji association from the dash-content section."
+    answer: "Individual emoji per link"
+
+  - question: "Should the top-level H1 heading receive an emoji?"
+    resolved: true
+    options:
+      - option: "No — keep H1 plain"
+        description: "The H1 title is the project name and sits above the deploy badge. Adding emoji here could look cluttered alongside the badge image. Most open-source READMEs keep the H1 clean."
+        selected: true
+      - option: "Yes — add emoji to H1"
+        description: "Adds an emoji prefix to the project title for maximum consistency. However, this may conflict visually with the deploy badge and hero image directly below it."
+        selected: false
+    selectionRationale: "The H1 serves as the project identity line and sits adjacent to a deploy badge and hero image. Adding emoji there risks visual clutter. The dash-content section itself starts at an H3, not H1, so leaving the H1 plain is consistent with the existing pattern."
+    answer: "No — keep H1 plain"
 
 content: |
   ## Problem Statement
 
   The README.md file has inconsistent emoji usage. The dash-content section (lines 11-27) uses
-  emoji extensively for headings, bullet points, and feature lists, but the remaining sections
-  (Getting Started, Development, Production, Additional Resources) use plain text headings with
-  no emoji. This creates a visual inconsistency in the document.
+  emoji extensively — on its heading, bullet points, and feature list items — but the remaining
+  sections (Getting Started, Development, Production, Additional Resources) use plain text
+  headings with no emoji. This creates a visual inconsistency in the document that makes the
+  lower half feel less polished than the top section.
 
-  ## Codebase Analysis
+  ## Success Criteria
 
-  ### Project Structure
-  This is a React + Vite + Hono + Cloudflare Workers template project. Key directories:
-  - `src/react-app/` — React frontend (App.tsx, main.tsx, CSS, assets)
-  - `src/worker/` — Cloudflare Worker backend (index.ts)
-  - `public/` — Static assets (vite.svg)
-  - `specs/` — Feature specification files
+  - [ ] All four section headings (Getting Started, Development, Production, Additional Resources) have a topic-relevant emoji prefix
+  - [ ] The Additional Resources link list items each have an individual emoji matching the technology
+  - [ ] The H1 heading remains unchanged (no emoji added)
+  - [ ] The dash-content section (lines 9-29) remains completely unchanged
+  - [ ] The README renders correctly in GitHub-flavored Markdown with no broken formatting
+  - [ ] All existing links, code blocks, and badge remain functional and unmodified
+  - [ ] The emoji style is visually consistent with the dash-content section's existing emoji usage
 
-  ### Architecture Patterns
-  Standard Vite + React SPA with a Hono-based Cloudflare Worker backend. TypeScript throughout.
-  ESLint for linting. Wrangler for Cloudflare deployment.
+  ## Functional Requirements
 
-  ### Relevant Technologies
-  Only Markdown is relevant — the README.md is a standard GitHub-flavored Markdown file.
-  No build tools, frameworks, or libraries are involved in this change.
+  - **FR-1**: Add a topic-relevant emoji prefix to the "## Getting Started" heading
+  - **FR-2**: Add a topic-relevant emoji prefix to the "## Development" heading
+  - **FR-3**: Add a topic-relevant emoji prefix to the "## Production" heading
+  - **FR-4**: Add a topic-relevant emoji prefix to the "## Additional Resources" heading
+  - **FR-5**: Add individual technology-relevant emoji to each link item in the Additional Resources list (Cloudflare Workers, Vite, React, Hono)
+  - **FR-6**: Do not modify the H1 heading, deploy badge, description paragraph, hero image, or dash-content section (lines 1-29)
+  - **FR-7**: Do not modify any code blocks, URLs, or command-line instructions
+
+  ## Non-Functional Requirements
+
+  - **NFR-1**: All emoji must be standard Unicode emoji that render correctly on GitHub, major browsers, and common terminals
+  - **NFR-2**: Emoji choices must be semantically relevant to their associated content (not random or decorative-only)
+  - **NFR-3**: The change must not alter any functional content — only visual presentation via emoji insertion
+  - **NFR-4**: The modified README must remain valid GitHub-flavored Markdown with no rendering artifacts
+
+  ## Product Questions & AI Recommendations
+
+  | # | Question | AI Recommendation | Rationale |
+  | - | -------- | ----------------- | --------- |
+  | 1 | Should emoji be added only to headings, or also to content lines? | Headings and key content | Matches the dash-content section's style of decorating both headings and list items |
+  | 2 | What emoji style should be used for section headings? | Topic-relevant emoji | The dash-content section already uses topic-relevant emoji; maintaining this pattern is consistent |
+  | 3 | Should Additional Resources link items get individual emoji? | Individual emoji per link | Mirrors the dash-content bullet style and each technology has a recognizable emoji association |
+  | 4 | Should the H1 heading receive an emoji? | No — keep H1 plain | H1 sits adjacent to badge/image; dash-content starts at H3, so leaving H1 plain is consistent |
 
   ## Affected Areas
 
   | Area | Impact | Reasoning |
   | ---- | ------ | --------- |
-  | README.md | High | The only file being modified — emoji will be added to section headings and content |
+  | README.md | High | The only file being modified — emoji will be added to section headings and resource list items |
 
   ## Dependencies
 
@@ -57,4 +127,4 @@ content: |
   ## Size Estimate
 
   **S** — This is a single-file, text-only change. The README is 84 lines and only needs emoji
-  added to a handful of section headings and content lines. Can be completed in minutes.
+  added to 4 section headings and 4 resource list items. Can be completed in minutes.
