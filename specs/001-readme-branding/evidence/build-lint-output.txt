@@ -1,0 +1,38 @@
+=== pnpm build ===
+
+> finaviber@0.0.0 build /Users/arielshadkhan/.shep/repos/118432e4096e945f/wt/feat-readme-branding
+> tsc -b && vite build
+
+vite v6.3.2 building for production...
+transforming...
+✓ 34 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/client/index.html                   0.47 kB │ gzip:   0.30 kB
+dist/client/assets/react-CHdo91hT.svg    4.13 kB │ gzip:   2.05 kB
+dist/client/assets/index-B5cJedgR.css    1.45 kB │ gzip:   0.72 kB
+dist/client/assets/index-C8gdHVAH.js   376.19 kB │ gzip: 112.46 kB
+✓ built in 445ms
+vite v6.3.2 building SSR bundle for production...
+transforming...
+✓ 36 modules transformed.
+rendering chunks...
+dist/finaviber/wrangler.json   1.17 kB
+dist/finaviber/index.js       62.94 kB
+✓ built in 52ms
+
+=== pnpm lint ===
+
+> finaviber@0.0.0 lint /Users/arielshadkhan/.shep/repos/118432e4096e945f/wt/feat-readme-branding
+> eslint .
+
+
+/Users/arielshadkhan/.shep/repos/118432e4096e945f/wt/feat-readme-branding/worker-configuration.d.ts
+  3778:44  warning  Unused eslint-disable directive (no problems were reported)
+  3791:70  warning  Unused eslint-disable directive (no problems were reported)
+
+✖ 2 problems (0 errors, 2 warnings)
+  0 errors and 2 warnings potentially fixable with the `--fix` option.
+
+
+=== Build and lint completed successfully ===
